@@ -4,6 +4,7 @@ import Square from './Square.vue'
 
 import { reactive, ref } from 'vue'
 
+
 const xWins = reactive({ count: 0 })
 const oWins = reactive({ count: 0 })
 let playerXTurn = ref(true)
@@ -14,12 +15,15 @@ let playerXTurn = ref(true)
 
 <template>
 
-    <div>
+    <div class="center">
+
         <h1># Jogo da Velha #</h1>
+
         <span>Placar <br>
-            <span>X: {{ xWins.count }}</span> <span> </span>
+            <span>X: {{ xWins.count }}</span> <span>| </span>
             <span>O: {{ oWins.count }}</span>
         </span> <br>
+
         <span v-if="playerXTurn">Vez do jogador X</span>
         <span v-else>Vez do jogador O</span>
 
@@ -36,6 +40,7 @@ let playerXTurn = ref(true)
             <Square @next-turn="playerXTurn = !playerXTurn" class="22 unselectable" :turn="playerXTurn" />
         </div>
     </div>
+
 
 </template>
 
@@ -55,5 +60,12 @@ let playerXTurn = ref(true)
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 </style>
