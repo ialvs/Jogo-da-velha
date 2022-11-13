@@ -26,7 +26,8 @@ const changeSymbol = function (turn: boolean) {
 <template>
 
     <div>
-        <div @click="$emit('next-turn'), changeSymbol(turn)">{{ symbol.emoji }}</div>
+        <div v-if="symbol.changeable" @click="$emit('next-turn'), changeSymbol(turn)">{{ symbol.emoji }}</div>
+        <div v-else>{{ symbol.emoji }}</div>
     </div>
 
 </template>
