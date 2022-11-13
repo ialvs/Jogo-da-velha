@@ -3,17 +3,21 @@ import { reactive } from 'vue'
 
 defineProps(['turn'])
 
-let symbol = reactive({ emoji: '⬜' })
+let symbol = reactive({ emoji: '⬜' ,changeable: true})
 
 defineEmits(['next-turn'])
 
 const changeSymbol = function (turn: boolean) {
 
-    if (turn) {
-        symbol.emoji = '❌'
-    } else {
-        symbol.emoji = '⭕'
-    }
+   if (symbol.changeable) {
+        if (turn) {
+            symbol.emoji = '❌'
+        } else {
+            symbol.emoji = '⭕'
+        }
+        symbol.changeable = false
+   } 
+
 }
 
 </script>
