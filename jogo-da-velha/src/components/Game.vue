@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, computed} from 'vue'
+import { ref, computed } from 'vue'
 
 let xWins = ref(0)
 let oWins = ref(0)
@@ -11,17 +11,16 @@ const squares = ref(
     ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
 )
 
-
 const winner = computed(() => checkForWinner(squares.value.flat()))
 const draw = computed(() => checkForDraw(squares.value))
 
-function checkForDraw(squares: Array<string>){
-    
+function checkForDraw(squares: Array<string>) {
+
     const drawState = squares.filter(square => square == '⬜')
-    
+
     if (drawState.length === 0 && (winner.value == null)) {
         return true
-    }else{
+    } else {
         return false
     }
 }
@@ -78,23 +77,24 @@ function newMove(squarePosition: number) {
 
 }
 
-function reset(){
+function reset() {
     squares.value = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
     playerXTurn = true
 }
 
 function endGame() {
-   
-    
+
+
     if (!playerXTurn && draw.value === false) {
         xWins.value++
     } else {
-        if(draw.value === false){
-        oWins.value++
+        if (draw.value === false) {
+            oWins.value++
         }
     }
-    
+
     playerXTurn = true
+    reset()
 }
 
 </script>
@@ -106,26 +106,25 @@ function endGame() {
 
         <h1># Jogo da Velha #</h1>
 
-        <span>Placar <br>
+        <h2 class="center2">Placar
             <span>❌: {{ xWins }}</span> <span>| </span>
             <span>⭕: {{ oWins }}</span>
-        </span> <br>
+        </h2> <br>
 
         <span v-if="playerXTurn && draw === false">Vez do jogador X</span>
         <span v-else-if="draw === false">Vez do jogador O</span>
-
+        <span v-if="draw">Empate!</span>
         <br>
         <div class="container">
             <div class="square unselectable" v-for="(square, index) in squares" :key="index" @click="newMove(index)">
                 {{ square }}
             </div>
+            <br>
             <button @click="reset">Reset</button>
 
         </div>
-        <span v-if="draw">Empate!</span>
-    </div>
-   
 
+    </div>
 
 </template>
 
@@ -152,6 +151,13 @@ function endGame() {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+
+.center2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }
 
 .square {
