@@ -1,21 +1,20 @@
 <script setup lang="ts">
 
-import { reactive, ref } from 'vue'
-import { computed } from 'vue'
+import { reactive, ref, computed, onUpdated } from 'vue'
 
-const xWins = reactive({ count: 0 })
-const oWins = reactive({ count: 0 })
+let xWins = ref(0)
+let oWins = ref(0)
 let playerXTurn: any = ref(true)
 
 
-const squares = reactive({
-    positions:['⬜','⬜','⬜','⬜','⬜','⬜','⬜','⬜','⬜'],
-    emoji: '⬜',
-    changeable: true
-})
+const squares = ref(
+    ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
+)
 
 
-const calculateWinner = (squares: Array<string>) => {
+const winner = computed(() => checkForWinner(squares.value.flat()))
+
+function checkForWinner(value: Array<string>) {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -24,15 +23,56 @@ const calculateWinner = (squares: Array<string>) => {
         [1, 4, 7],
         [2, 5, 8],
         [0, 4, 8],
-        [2, 4, 6],
+        [2, 4, 6]
     ]
+
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i]
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a]
+        if (
+            value[a] &&
+            value[a] === value[b] &&
+            value[a] === value[c]
+        ) {
+            return value[a]
         }
     }
     return null
+}
+
+function newMove(squarePosition: number) {
+
+    if (winner.value && winner.value != '⬜') {
+        console.log('inside if winner value: ' + winner.value)
+        endGame()
+        return
+    }
+
+    if (squares.value[squarePosition] == '⬜') {
+        if (playerXTurn) {
+            squares.value[squarePosition] = '❌'
+        } else {
+            squares.value[squarePosition] = '⭕'
+        }
+        playerXTurn = !playerXTurn
+
+    }
+
+    if (winner.value && winner.value != '⬜') {
+        console.log('inside if winner value: ' + winner.value)
+        endGame()
+        return
+    }
+
+}
+
+function endGame() {
+    squares.value = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
+    if (!playerXTurn) {
+        xWins.value++
+    } else {
+        oWins.value++
+    }
+    playerXTurn = true
 }
 
 </script>
@@ -45,8 +85,8 @@ const calculateWinner = (squares: Array<string>) => {
         <h1># Jogo da Velha #</h1>
 
         <span>Placar <br>
-            <span>❌: {{ xWins.count }}</span> <span>| </span>
-            <span>⭕: {{ oWins.count }}</span>
+            <span>❌: {{ xWins }}</span> <span>| </span>
+            <span>⭕: {{ oWins }}</span>
         </span> <br>
 
         <span v-if="playerXTurn">Vez do jogador X</span>
@@ -54,7 +94,7 @@ const calculateWinner = (squares: Array<string>) => {
 
         <br>
         <div class="container">
-            <div class="square unselectable" v-for="(square, index) in squares.positions" :key="index" @click="">
+            <div class="square unselectable" v-for="(square, index) in squares" :key="index" @click="newMove(index)">
                 {{ square }}
             </div>
 
@@ -66,6 +106,17 @@ const calculateWinner = (squares: Array<string>) => {
 
 <!-- v-if="symbol.changeable" @click="$emit('next-turn'), changeSymbol(props.turn)">{{ symbol.emoji }} -->
 <!-- <div class="square" v-else>{{ symbol.emoji }}</div> -->
+
+<!--
+    function endGame(){
+    squares.value = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
+    if(playerXTurn){
+        xWins.value++
+    }else {
+        oWins.value++
+    }
+}
+-->
 
 <style scoped>
 .container {
