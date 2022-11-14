@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { reactive, ref, computed, onUpdated } from 'vue'
+import {ref, computed} from 'vue'
 
 let xWins = ref(0)
 let oWins = ref(0)
@@ -13,8 +13,20 @@ const squares = ref(
 
 
 const winner = computed(() => checkForWinner(squares.value.flat()))
+const draw = computed(() => checkForDraw(squares.value))
 
-function checkForWinner(value: Array<string>) {
+function checkForDraw(squares: Array<string>){
+    
+    const drawState = squares.filter(square => square == '⬜')
+    
+    if (drawState.length === 0 && (winner.value == null)) {
+        return true
+    }else{
+        return false
+    }
+}
+
+function checkForWinner(squares: Array<string>) {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -29,11 +41,11 @@ function checkForWinner(value: Array<string>) {
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i]
         if (
-            value[a] &&
-            value[a] === value[b] &&
-            value[a] === value[c]
+            squares[a] &&
+            squares[a] === squares[b] &&
+            squares[a] === squares[c]
         ) {
-            return value[a]
+            return squares[a]
         }
     }
     return null
@@ -63,15 +75,25 @@ function newMove(squarePosition: number) {
         return
     }
 
+
+}
+
+function reset(){
+    squares.value = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
+    playerXTurn = true
 }
 
 function endGame() {
-    squares.value = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
-    if (!playerXTurn) {
+   
+    
+    if (!playerXTurn && draw.value === false) {
         xWins.value++
     } else {
+        if(draw.value === false){
         oWins.value++
+        }
     }
+    
     playerXTurn = true
 }
 
@@ -89,34 +111,24 @@ function endGame() {
             <span>⭕: {{ oWins }}</span>
         </span> <br>
 
-        <span v-if="playerXTurn">Vez do jogador X</span>
-        <span v-else>Vez do jogador O</span>
+        <span v-if="playerXTurn && draw === false">Vez do jogador X</span>
+        <span v-else-if="draw === false">Vez do jogador O</span>
 
         <br>
         <div class="container">
             <div class="square unselectable" v-for="(square, index) in squares" :key="index" @click="newMove(index)">
                 {{ square }}
             </div>
+            <button @click="reset">Reset</button>
 
         </div>
+        <span v-if="draw">Empate!</span>
     </div>
+   
 
 
 </template>
 
-<!-- v-if="symbol.changeable" @click="$emit('next-turn'), changeSymbol(props.turn)">{{ symbol.emoji }} -->
-<!-- <div class="square" v-else>{{ symbol.emoji }}</div> -->
-
-<!--
-    function endGame(){
-    squares.value = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
-    if(playerXTurn){
-        xWins.value++
-    }else {
-        oWins.value++
-    }
-}
--->
 
 <style scoped>
 .container {
