@@ -1,20 +1,19 @@
 <script setup lang="ts">
 
-import Square from './Square.vue'
-
 import { reactive, ref } from 'vue'
-import { computed } from '@vue/reactivity';
-
+import { computed } from 'vue'
 
 const xWins = reactive({ count: 0 })
 const oWins = reactive({ count: 0 })
-let playerXTurn:any = ref(true)
+let playerXTurn: any = ref(true)
 
-const squares = ref([
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', '']
-])
+
+const squares = reactive({
+    positions:['⬜','⬜','⬜','⬜','⬜','⬜','⬜','⬜','⬜'],
+    emoji: '⬜',
+    changeable: true
+})
+
 
 const calculateWinner = (squares: Array<string>) => {
     const lines = [
@@ -36,22 +35,6 @@ const calculateWinner = (squares: Array<string>) => {
     return null
 }
 
-const winner:any = computed (() => calculateWinner(squares.value.flat()))
-
-const move = (x:number, y:number) => {
-    
-    if (winner.value) return
-    
-    if (playerXTurn) {
-        squares.value[x][y] = '❌'    
-    } else {
-        squares.value[x][y] = '⭕' 
-    }
-    playerXTurn = '⭕' ? true : false 
-    
-}
-
-
 </script>
 
 
@@ -71,21 +54,18 @@ const move = (x:number, y:number) => {
 
         <br>
         <div class="container">
-            <Square @next-turn="move()" class="00 unselectable" :turn="playerXTurn" :x="0" :y="0" />
-            <Square @next-turn="" class="01 unselectable" :turn="playerXTurn" :x="0" :y="1" />
-            <Square @next-turn="" class="02 unselectable" :turn="playerXTurn" :x="0" :y="2" />
-            <Square @next-turn="" class="10 unselectable" :turn="playerXTurn" :x="1" :y="0" />
-            <Square @next-turn="" class="11 unselectable" :turn="playerXTurn" :x="1" :y="1" />
-            <Square @next-turn="" class="12 unselectable" :turn="playerXTurn" :x="1" :y="2" />
-            <Square @next-turn="" class="20 unselectable" :turn="playerXTurn" :x="2" :y="0" />
-            <Square @next-turn="" class="21 unselectable" :turn="playerXTurn" :x="2" :y="1" />
-            <Square @next-turn="" class="22 unselectable" :turn="playerXTurn" :x="2" :y="2" />
+            <div class="square unselectable" v-for="(square, index) in squares.positions" :key="index" @click="">
+                {{ square }}
+            </div>
+
         </div>
     </div>
 
 
 </template>
 
+<!-- v-if="symbol.changeable" @click="$emit('next-turn'), changeSymbol(props.turn)">{{ symbol.emoji }} -->
+<!-- <div class="square" v-else>{{ symbol.emoji }}</div> -->
 
 <style scoped>
 .container {
@@ -109,5 +89,13 @@ const move = (x:number, y:number) => {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+
+.square {
+    border: 0.5px solid;
+}
+
+div.square:hover {
+    background-color: gray;
 }
 </style>
