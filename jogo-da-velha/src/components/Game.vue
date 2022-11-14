@@ -3,7 +3,7 @@
 import Square from './Square.vue'
 
 import { reactive, ref } from 'vue'
-import { computed } from '@vue/reactivity';
+import { computed } from 'vue';
 
 
 const xWins = reactive({ count: 0 })
@@ -71,7 +71,7 @@ const move = (x:number, y:number) => {
 
         <br>
         <div class="container">
-            <Square @next-turn="move()" class="00 unselectable" :turn="playerXTurn" :x="0" :y="0" />
+            <Square @next-turn="" class="00 unselectable" :turn="playerXTurn" :x="0" :y="0" />
             <Square @next-turn="" class="01 unselectable" :turn="playerXTurn" :x="0" :y="1" />
             <Square @next-turn="" class="02 unselectable" :turn="playerXTurn" :x="0" :y="2" />
             <Square @next-turn="" class="10 unselectable" :turn="playerXTurn" :x="1" :y="0" />
