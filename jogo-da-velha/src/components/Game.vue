@@ -1,23 +1,40 @@
 <script setup lang="ts">
 
-import Square from './Square.vue'
+import { ref, computed } from 'vue'
 
-import { reactive, ref } from 'vue'
-import { computed } from 'vue';
+let xWins = ref(0)
+let oWins = ref(0)
+let playerXTurn: any = ref(true)
 
 
-const xWins = reactive({ count: 0 })
-const oWins = reactive({ count: 0 })
-let playerXTurn:any = ref(true)
+const squares = ref(
+    ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
+)
 
-const squares = ref([
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', '']
-])
 
-const calculateWinner = (squares: Array<string>) => {
-    const lines = [
+
+function checkForDraw(squares: Array<string>) {
+
+    const drawState = squares.filter(square => square == '⬜')
+    if (!drawState.includes('⬜') && (winner.value == null)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+
+function checkForWinner(squares: Array<string>) {
+    console.log("they reached me")
+
+    for (let index = 0; index < squares.length; index++) {
+        if (squares[index] == '⬜') {
+            squares[index] = ''
+        }
+        
+    }
+
+    const winLines = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
@@ -25,32 +42,84 @@ const calculateWinner = (squares: Array<string>) => {
         [1, 4, 7],
         [2, 5, 8],
         [0, 4, 8],
-        [2, 4, 6],
+        [2, 4, 6]
     ]
-    for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i]
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+
+    for (let i = 0; i < winLines.length; i++) {
+        const [a, b, c] = winLines[i]
+        if (
+            squares[a] &&
+            squares[a] === squares[b] &&
+            squares[a] === squares[c]
+        ) {
+            console.log("saí", squares[a], squares[b], squares[c])
             return squares[a]
+
         }
     }
     return null
 }
 
-const winner:any = computed (() => calculateWinner(squares.value.flat()))
+const winner = computed(() => checkForWinner(squares.value.flat()))
+const draw = computed(() => checkForDraw(squares.value.flat()))
 
-const move = (x:number, y:number) => {
-    
-    if (winner.value) return
-    
-    if (playerXTurn) {
-        squares.value[x][y] = '❌'    
-    } else {
-        squares.value[x][y] = '⭕' 
+function newMove(squarePosition: number) {
+    //console.log("quando entra = ",squares.value[squarePosition])
+    //console.log(winner.value)
+    //console.log("pré teste 1", winner.value)
+
+
+    /*if (winner.value === '❌' || winner.value === '⭕') {
+        console.log('inside if winner value: ' + winner.value)
+        endGame()
+        return
+    }*/
+    //console.log("pós teste 1", winner.value)
+
+    if (squares.value[squarePosition] == '⬜') {
+        if (playerXTurn) {
+            squares.value[squarePosition] = '❌'
+        } else {
+            squares.value[squarePosition] = '⭕'
+        }
+        playerXTurn = !playerXTurn
     }
-    playerXTurn = '⭕' ? true : false 
-    
+    //console.log("quando sai = ",squares.value[squarePosition])
+
+    //console.log("pré teste 2", winner.value)
+
+
+    if (winner.value != '⬜' && winner.value != null) {
+        console.log('inside if winner value: ' + winner.value)
+        endGame()
+        return
+    }
+
+    //console.log("pós teste 2", winner.value)
+
+    console.log(squares.value)
+    //console.log(squares.value.flat())
+    //console.log(winner.value)
 }
 
+function reset() {
+    squares.value = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
+    playerXTurn = true
+}
+
+function endGame() {
+
+    if (draw.value === false) {
+        if (!playerXTurn) {
+            xWins.value++
+        } else {
+            oWins.value++
+        }
+    }
+
+    playerXTurn = true
+    reset()
+}
 
 </script>
 
@@ -61,28 +130,25 @@ const move = (x:number, y:number) => {
 
         <h1># Jogo da Velha #</h1>
 
-        <span>Placar <br>
-            <span>❌: {{ xWins.count }}</span> <span>| </span>
-            <span>⭕: {{ oWins.count }}</span>
-        </span> <br>
+        <h2 class="center2">Placar
+            <span>❌: {{ xWins }}</span> <span>| </span>
+            <span>⭕: {{ oWins }}</span>
+        </h2> <br>
 
-        <span v-if="playerXTurn">Vez do jogador X</span>
-        <span v-else>Vez do jogador O</span>
-
+        <span v-if="playerXTurn && draw === false">Vez do jogador X</span>
+        <span v-else-if="draw === false">Vez do jogador O</span>
+        <span v-if="draw">Empate!</span>
         <br>
         <div class="container">
-            <Square @next-turn="" class="00 unselectable" :turn="playerXTurn" :x="0" :y="0" />
-            <Square @next-turn="" class="01 unselectable" :turn="playerXTurn" :x="0" :y="1" />
-            <Square @next-turn="" class="02 unselectable" :turn="playerXTurn" :x="0" :y="2" />
-            <Square @next-turn="" class="10 unselectable" :turn="playerXTurn" :x="1" :y="0" />
-            <Square @next-turn="" class="11 unselectable" :turn="playerXTurn" :x="1" :y="1" />
-            <Square @next-turn="" class="12 unselectable" :turn="playerXTurn" :x="1" :y="2" />
-            <Square @next-turn="" class="20 unselectable" :turn="playerXTurn" :x="2" :y="0" />
-            <Square @next-turn="" class="21 unselectable" :turn="playerXTurn" :x="2" :y="1" />
-            <Square @next-turn="" class="22 unselectable" :turn="playerXTurn" :x="2" :y="2" />
-        </div>
-    </div>
+            <div class="square unselectable" v-for="(square, index) in squares" :key="index" @click="newMove(index)">
+                {{ square }}
+            </div>
+            <br>
+            <button @click="reset">Reset</button>
 
+        </div>
+
+    </div>
 
 </template>
 
@@ -109,5 +175,20 @@ const move = (x:number, y:number) => {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+
+.center2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.square {
+    border: 0.5px solid;
+}
+
+div.square:hover {
+    background-color: gray;
 }
 </style>
