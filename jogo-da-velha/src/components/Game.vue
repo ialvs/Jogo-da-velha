@@ -25,7 +25,6 @@ function checkForDraw(squares: Array<string>) {
 
 
 function checkForWinner(squares: Array<string>) {
-    console.log("they reached me")
 
     for (let index = 0; index < squares.length; index++) {
         if (squares[index] == '⬜') {
@@ -52,7 +51,6 @@ function checkForWinner(squares: Array<string>) {
             squares[a] === squares[b] &&
             squares[a] === squares[c]
         ) {
-            console.log("saí", squares[a], squares[b], squares[c])
             return squares[a]
 
         }
@@ -64,17 +62,6 @@ const winner = computed(() => checkForWinner(squares.value.flat()))
 const draw = computed(() => checkForDraw(squares.value.flat()))
 
 function newMove(squarePosition: number) {
-    //console.log("quando entra = ",squares.value[squarePosition])
-    //console.log(winner.value)
-    //console.log("pré teste 1", winner.value)
-
-
-    /*if (winner.value === '❌' || winner.value === '⭕') {
-        console.log('inside if winner value: ' + winner.value)
-        endGame()
-        return
-    }*/
-    //console.log("pós teste 1", winner.value)
 
     if (squares.value[squarePosition] == '⬜') {
         if (playerXTurn) {
@@ -84,22 +71,12 @@ function newMove(squarePosition: number) {
         }
         playerXTurn = !playerXTurn
     }
-    //console.log("quando sai = ",squares.value[squarePosition])
-
-    //console.log("pré teste 2", winner.value)
-
 
     if (winner.value != '⬜' && winner.value != null) {
-        console.log('inside if winner value: ' + winner.value)
         endGame()
         return
     }
 
-    //console.log("pós teste 2", winner.value)
-
-    console.log(squares.value)
-    //console.log(squares.value.flat())
-    //console.log(winner.value)
 }
 
 function reset() {
