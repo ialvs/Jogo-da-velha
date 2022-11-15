@@ -12,12 +12,11 @@ const squares = ref(
 )
 
 const winner = computed(() => checkForWinner(squares.value.flat()))
-const draw = computed(() => checkForDraw(squares.value))
+const draw = computed(() => checkForDraw(squares.value.flat()))
 
 function checkForDraw(squares: Array<string>) {
 
     const drawState = squares.filter(square => square == '⬜')
-
     if (drawState.length === 0 && (winner.value == null)) {
         return true
     } else {
@@ -26,7 +25,7 @@ function checkForDraw(squares: Array<string>) {
 }
 
 function checkForWinner(squares: Array<string>) {
-    const lines = [
+    const winLines = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
@@ -37,8 +36,9 @@ function checkForWinner(squares: Array<string>) {
         [2, 4, 6]
     ]
 
-    for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i]
+    for (let i = 0; i < winLines.length; i++) {
+        const [a, b, c] = winLines[i]
+        //console.log(squares[a],squares[b],squares[c])
         if (
             squares[a] &&
             squares[a] === squares[b] &&
@@ -51,12 +51,16 @@ function checkForWinner(squares: Array<string>) {
 }
 
 function newMove(squarePosition: number) {
-
-    if (winner.value && winner.value != '⬜') {
+    //console.log("quando entra = ",squares.value[squarePosition])
+    //console.log(winner.value)
+    //console.log("pré teste 1", winner.value)
+    
+    if (winner.value == '❌' || winner.value == '⭕') {
         console.log('inside if winner value: ' + winner.value)
         endGame()
         return
     }
+    //console.log("pós teste 1", winner.value)
 
     if (squares.value[squarePosition] == '⬜') {
         if (playerXTurn) {
@@ -67,14 +71,21 @@ function newMove(squarePosition: number) {
         playerXTurn = !playerXTurn
 
     }
+    //console.log("quando sai = ",squares.value[squarePosition])
 
-    if (winner.value && winner.value != '⬜') {
+    //console.log("pré teste 2", winner.value)
+    
+    if (winner.value == '❌' || winner.value == '⭕') {
         console.log('inside if winner value: ' + winner.value)
         endGame()
         return
     }
+    
+    //console.log("pós teste 2", winner.value)
 
-
+    //console.log(squares.value)
+    //console.log(squares.value.flat())
+    //console.log(winner.value)
 }
 
 function reset() {
@@ -84,11 +95,10 @@ function reset() {
 
 function endGame() {
 
-
-    if (!playerXTurn && draw.value === false) {
-        xWins.value++
-    } else {
-        if (draw.value === false) {
+    if (draw.value === false) {
+        if (!playerXTurn) {
+            xWins.value++    
+        } else {
             oWins.value++
         }
     }
@@ -130,6 +140,7 @@ function endGame() {
 
 
 <style scoped>
+
 .container {
     display: grid;
     grid-template-columns: repeat(3, 33.33%);
