@@ -11,20 +11,29 @@ const squares = ref(
     ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜', '⬜']
 )
 
-const winner = computed(() => checkForWinner(squares.value.flat()))
-const draw = computed(() => checkForDraw(squares.value.flat()))
+
 
 function checkForDraw(squares: Array<string>) {
 
     const drawState = squares.filter(square => square == '⬜')
-    if (drawState.length === 0 && (winner.value == null)) {
+    if (!drawState.includes('⬜') && (winner.value == null)) {
         return true
     } else {
         return false
     }
 }
 
+
 function checkForWinner(squares: Array<string>) {
+    console.log("they reached me")
+
+    for (let index = 0; index < squares.length; index++) {
+        if (squares[index] == '⬜') {
+            squares[index] = ''
+        }
+        
+    }
+
     const winLines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -38,28 +47,33 @@ function checkForWinner(squares: Array<string>) {
 
     for (let i = 0; i < winLines.length; i++) {
         const [a, b, c] = winLines[i]
-        //console.log(squares[a],squares[b],squares[c])
         if (
             squares[a] &&
             squares[a] === squares[b] &&
             squares[a] === squares[c]
         ) {
+            console.log("saí", squares[a], squares[b], squares[c])
             return squares[a]
+
         }
     }
     return null
 }
 
+const winner = computed(() => checkForWinner(squares.value.flat()))
+const draw = computed(() => checkForDraw(squares.value.flat()))
+
 function newMove(squarePosition: number) {
     //console.log("quando entra = ",squares.value[squarePosition])
     //console.log(winner.value)
     //console.log("pré teste 1", winner.value)
-    
-    if (winner.value == '❌' || winner.value == '⭕') {
+
+
+    /*if (winner.value === '❌' || winner.value === '⭕') {
         console.log('inside if winner value: ' + winner.value)
         endGame()
         return
-    }
+    }*/
     //console.log("pós teste 1", winner.value)
 
     if (squares.value[squarePosition] == '⬜') {
@@ -69,21 +83,21 @@ function newMove(squarePosition: number) {
             squares.value[squarePosition] = '⭕'
         }
         playerXTurn = !playerXTurn
-
     }
     //console.log("quando sai = ",squares.value[squarePosition])
 
     //console.log("pré teste 2", winner.value)
-    
-    if (winner.value == '❌' || winner.value == '⭕') {
+
+
+    if (winner.value != '⬜' && winner.value != null) {
         console.log('inside if winner value: ' + winner.value)
         endGame()
         return
     }
-    
+
     //console.log("pós teste 2", winner.value)
 
-    //console.log(squares.value)
+    console.log(squares.value)
     //console.log(squares.value.flat())
     //console.log(winner.value)
 }
@@ -97,7 +111,7 @@ function endGame() {
 
     if (draw.value === false) {
         if (!playerXTurn) {
-            xWins.value++    
+            xWins.value++
         } else {
             oWins.value++
         }
@@ -140,7 +154,6 @@ function endGame() {
 
 
 <style scoped>
-
 .container {
     display: grid;
     grid-template-columns: repeat(3, 33.33%);

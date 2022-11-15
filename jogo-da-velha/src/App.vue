@@ -8,7 +8,7 @@ import Game from './components/Game.vue'
 
   <div class="container">
     <div></div>
-    <Game />
+    <Game class="game" />
     <div></div>
   </div>
 
@@ -24,6 +24,10 @@ import Game from './components/Game.vue'
   display: grid;
   grid-template-columns: 0.5fr 1fr 0.5fr;
   font-family: 'Rubik', sans-serif;
+}
+
+.game{
+  border: 0.5px solid;
 }
 
 </style>
